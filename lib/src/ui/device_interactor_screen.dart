@@ -95,7 +95,7 @@ class _DeviceInteractorState extends State<DeviceInteractor> {
                 stream: subscriptionStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    print(snapshot.data);
+                    debugPrint(snapshot.data!.toString());
                     return Text(snapshot.data.toString());
                   }
                   return const Text('No data yet');
