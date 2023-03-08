@@ -1,4 +1,4 @@
-package com.quadbeam.stream_provider_ble
+package com.quadbeam.blestream
 
 import io.flutter.embedding.android.FlutterActivity
 

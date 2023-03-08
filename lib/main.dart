@@ -1,16 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:stream_provider_ble/src/ble/ble_device_connector.dart';
-import 'package:stream_provider_ble/src/ble/ble_device_interactor.dart';
-import 'package:stream_provider_ble/src/ble/ble_scanner.dart';
-import 'package:stream_provider_ble/src/ble/ble_status_monitor.dart';
-import 'package:stream_provider_ble/src/ui/ble_status_screen.dart';
-import 'package:stream_provider_ble/src/ui/device_list.dart';
+import 'package:blestream/src/ble/ble_device_connector.dart';
+import 'package:blestream/src/ble/ble_device_interactor.dart';
+import 'package:blestream/src/ble/ble_scanner.dart';
+import 'package:blestream/src/ble/ble_status_monitor.dart';
+import 'package:blestream/src/ui/ble_status_screen.dart';
+import 'package:blestream/src/ui/device_list.dart';
 import 'package:provider/provider.dart';
-
+import 'package:blestream/globals.dart' as g;
 import 'src/ble/ble_logger.dart';
 
-const _themeColor = Colors.lightGreen;
+var _themeColor = g.olive; // Colors.lightGreen;
+
+final materialThemeData = ThemeData(
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme: AppBarTheme(color: Colors.blue.shade600),
+    primaryColor: Colors.blue,
+    secondaryHeaderColor: Colors.blue,
+    canvasColor: Colors.blue,
+    textTheme:
+        const TextTheme().copyWith(bodyLarge: const TextTheme().bodyMedium),
+    colorScheme: ColorScheme.fromSwatch(primarySwatch: g.olive)
+        .copyWith(background: Colors.white)
+        .copyWith(secondary: g.olive));
+const cupertinoTheme = CupertinoThemeData(
+    primaryColor: Color.fromRGBO(53, 95, 80, 1),
+    barBackgroundColor: Color.fromRGBO(53, 95, 80, 1),
+    scaffoldBackgroundColor: Colors.white);
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,10 +77,10 @@ void main() {
           ),
         ),
       ],
-      child: MaterialApp(
-        title: 'Flutter Reactive BLE example',
+      child: PlatformApp(
+        title: 'blestream example',
         color: _themeColor,
-        theme: ThemeData(primarySwatch: _themeColor),
+        // theme: ThemeData(primarySwatch: _themeColor),
         home: const HomeScreen(),
       ),
     ),

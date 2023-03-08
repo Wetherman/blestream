@@ -1,7 +1,11 @@
+import 'dart:core';
+
+import 'package:blestream/src/ui/device_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:provider/provider.dart';
-import 'package:stream_provider_ble/src/ble/ble_device_interactor.dart';
+import 'package:blestream/src/ble/ble_device_interactor.dart';
 
 class DeviceInteractorScreen extends StatelessWidget {
   final String deviceId;
@@ -10,7 +14,7 @@ class DeviceInteractorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PlatformScaffold(
       body: Center(
         child: Consumer2<ConnectionStateUpdate, BleDeviceInteractor>(
           builder: (_, connectionStateUpdate, deviceInteractor, __) {
@@ -22,9 +26,9 @@ class DeviceInteractorScreen extends StatelessWidget {
               );
             } else if (connectionStateUpdate.connectionState ==
                 DeviceConnectionState.connecting) {
-              return const Text('connecting');
+              return PlatformText('connecting');
             } else {
-              return const Text('error');
+              return PlatformText('error');
             }
           },
         ),
@@ -46,12 +50,20 @@ class DeviceInteractor extends StatefulWidget {
 }
 
 class _DeviceInteractorState extends State<DeviceInteractor> {
-  final Uuid _myServiceUuid =
-      Uuid.parse("19b10000-e8f2-537e-4f6c-6969768a1214");
-  final Uuid _myCharacteristicUuid =
-      Uuid.parse("19b10001-e8f2-537e-4f6c-6969768a1214");
+  final Uuid _nordicUartServiceUuid = uartUuid;
+  final Uuid _nordicUartTxUuid = uartTx;
+  final Uuid _nordicUartRxUuid = uartRx;
 
   Stream<List<int>>? subscriptionStream;
+
+  sendCommand(cmd) async {
+    await widget.deviceInteractor.writeCharacteristicWithoutResponse(
+        QualifiedCharacteristic(
+            characteristicId: _nordicUartTxUuid,
+            serviceId: _nordicUartServiceUuid,
+            deviceId: widget.deviceId),
+        [76]); // chr(76)="L"
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +71,11 @@ class _DeviceInteractorState extends State<DeviceInteractor> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Text('connected'),
+        PlatformText('connected'),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
+            PlatformTextButton(
               onPressed: subscriptionStream != null
                   ? null
                   : () async {
@@ -71,22 +83,31 @@ class _DeviceInteractorState extends State<DeviceInteractor> {
                         subscriptionStream =
                             widget.deviceInteractor.subScribeToCharacteristic(
                           QualifiedCharacteristic(
-                              characteristicId: _myCharacteristicUuid,
-                              serviceId: _myServiceUuid,
+                              characteristicId: _nordicUartRxUuid,
+                              serviceId: _nordicUartServiceUuid,
                               deviceId: widget.deviceId),
                         );
                       });
                     },
-              child: const Text('subscribe'),
+              child: PlatformText('subscribe'),
             ),
             const SizedBox(
               width: 20,
             ),
-            ElevatedButton(
+            PlatformTextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('disconnect'),
+              child: PlatformText('disconnect'),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+            PlatformTextButton(
+              onPressed: () {
+                sendCommand("L");
+              },
+              child: PlatformText('list'),
             ),
           ],
         ),
@@ -96,11 +117,11 @@ class _DeviceInteractorState extends State<DeviceInteractor> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     debugPrint(snapshot.data!.toString());
-                    return Text(snapshot.data.toString());
+                    return PlatformText(snapshot.data.toString());
                   }
-                  return const Text('No data yet');
+                  return PlatformText('No data yet');
                 })
-            : const Text('Stream not initalized')
+            : PlatformText('Stream not initalized')
       ],
     );
   }

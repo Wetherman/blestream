@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:provider/provider.dart';
-import 'package:stream_provider_ble/src/ble/ble_device_connector.dart';
-import 'package:stream_provider_ble/src/ble/ble_scanner.dart';
-import 'package:stream_provider_ble/src/ui/device_interactor_screen.dart';
+import 'package:blestream/src/ble/ble_device_connector.dart';
+import 'package:blestream/src/ble/ble_scanner.dart';
+import 'package:blestream/src/ui/device_interactor_screen.dart';
+
+Uuid uartUuid = Uuid.parse("6E400001-B5A3-F393-E0A9-E50E24DCCA9E");
+Uuid uartRx = Uuid.parse("6E400002-B5A3-F393-E0A9-E50E24DCCA9E");
+Uuid uartTx = Uuid.parse("6E400003-B5A3-F393-E0A9-E50E24DCCA9E");
 
 class DeviceListScreen extends StatelessWidget {
   const DeviceListScreen({Key? key}) : super(key: key);
@@ -44,7 +49,7 @@ class _DeviceList extends StatefulWidget {
 class __DeviceListState extends State<_DeviceList> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PlatformScaffold(
       body: Padding(
         padding: const EdgeInsets.all(25.0),
         child: Column(
@@ -55,21 +60,23 @@ class __DeviceListState extends State<_DeviceList> {
                 children: widget.scannerState.discoveredDevices
                     .map(
                       (device) => ListTile(
-                        title: Text(device.name),
-                        subtitle: Text("${device.id}\nRSSI: ${device.rssi}"),
+                        title: PlatformText(device.name),
+                        subtitle:
+                            PlatformText("${device.id}\nRSSI: ${device.rssi}"),
                         leading: const Icon(Icons.bluetooth),
                         onTap: () async {
                           widget.stopScan();
                           widget.deviceConnector.connect(device.id);
                           await Navigator.push(
                             context,
-                            MaterialPageRoute(
+                            platformPageRoute(
                               builder: (context) =>
                                   DeviceInteractorScreen(deviceId: device.id),
+                              context: context,
                             ),
                           );
                           widget.deviceConnector.disconnect(device.id);
-                          widget.startScan([]);
+                          widget.startScan([uartUuid]);
                         },
                       ),
                     )
@@ -80,13 +87,13 @@ class __DeviceListState extends State<_DeviceList> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                    child: const Text('Scan'),
+                PlatformTextButton(
+                    child: PlatformText('Scan'),
                     onPressed: !widget.scannerState.scanIsInProgress
-                        ? () => widget.startScan([])
+                        ? () => widget.startScan([uartUuid])
                         : null),
-                ElevatedButton(
-                  child: const Text('Stop'),
+                PlatformTextButton(
+                  child: PlatformText('Stop'),
                   onPressed: widget.scannerState.scanIsInProgress
                       ? widget.stopScan
                       : null,

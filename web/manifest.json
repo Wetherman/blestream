@@ -1,6 +1,6 @@
 {
-    "name": "stream_provider_ble",
-    "short_name": "stream_provider_ble",
+    "name": "blestream",
+    "short_name": "blestream",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
 class BleStatusScreen extends StatelessWidget {
@@ -11,11 +12,11 @@ class BleStatusScreen extends StatelessWidget {
       case BleStatus.unsupported:
         return "This device does not support Bluetooth";
       case BleStatus.unauthorized:
-        return "Authorize the FlutterReactiveBle example app to use Bluetooth and location";
+        return "Please authorise blestream to use Bluetooth and location";
       case BleStatus.poweredOff:
         return "Bluetooth is powered off on your device turn it on";
       case BleStatus.locationServicesDisabled:
-        return "Enable location services";
+        return "Please enable location services";
       case BleStatus.ready:
         return "Bluetooth is up and running";
       default:
@@ -24,9 +25,9 @@ class BleStatusScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => PlatformScaffold(
         body: Center(
-          child: Text(determineText(status)),
+          child: PlatformText(determineText(status)),
         ),
       );
 }

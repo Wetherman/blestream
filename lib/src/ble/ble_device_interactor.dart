@@ -70,7 +70,7 @@ class BleDeviceInteractor {
     }
   }
 
-  Future<void> writeCharacterisiticWithResponse(
+  Future<void> writeCharacteristicWithResponse(
       QualifiedCharacteristic characteristic, List<int> value) async {
     try {
       _logMessage(
@@ -86,7 +86,7 @@ class BleDeviceInteractor {
     }
   }
 
-  Future<void> writeCharacterisiticWithoutResponse(
+  Future<void> writeCharacteristicWithoutResponse(
       QualifiedCharacteristic characteristic, List<int> value) async {
     try {
       await _writeWithoutResponse(characteristic, value: value);
