@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:convert';
 
 import 'package:blestream/src/ui/device_list.dart';
 import 'package:flutter/material.dart';
@@ -56,13 +57,15 @@ class _DeviceInteractorState extends State<DeviceInteractor> {
 
   Stream<List<int>>? subscriptionStream;
 
+  // tried removing async and await but the receiver subscription
+  //  still misses the first packet
   sendCommand(cmd) async {
     await widget.deviceInteractor.writeCharacteristicWithoutResponse(
         QualifiedCharacteristic(
-            characteristicId: _nordicUartTxUuid,
+            characteristicId: _nordicUartRxUuid,
             serviceId: _nordicUartServiceUuid,
             deviceId: widget.deviceId),
-        [76]); // chr(76)="L"
+        ascii.encode(cmd));
   }
 
   @override
@@ -79,15 +82,17 @@ class _DeviceInteractorState extends State<DeviceInteractor> {
               onPressed: subscriptionStream != null
                   ? null
                   : () async {
-                      setState(() {
-                        subscriptionStream =
-                            widget.deviceInteractor.subScribeToCharacteristic(
-                          QualifiedCharacteristic(
-                              characteristicId: _nordicUartRxUuid,
-                              serviceId: _nordicUartServiceUuid,
-                              deviceId: widget.deviceId),
-                        );
-                      });
+                      setState(
+                        () {
+                          subscriptionStream =
+                              widget.deviceInteractor.subScribeToCharacteristic(
+                            QualifiedCharacteristic(
+                                characteristicId: _nordicUartTxUuid,
+                                serviceId: _nordicUartServiceUuid,
+                                deviceId: widget.deviceId),
+                          );
+                        },
+                      );
                     },
               child: PlatformText('subscribe'),
             ),
@@ -116,11 +121,12 @@ class _DeviceInteractorState extends State<DeviceInteractor> {
                 stream: subscriptionStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    debugPrint(snapshot.data!.toString());
+                    debugPrint(ascii.decode(snapshot.data!));
                     return PlatformText(snapshot.data.toString());
                   }
                   return PlatformText('No data yet');
-                })
+                },
+              )
             : PlatformText('Stream not initalized')
       ],
     );
